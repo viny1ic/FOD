@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import time
 
 key = cv2. waitKey(1)
 webcam = cv2.VideoCapture(0)
@@ -13,6 +14,7 @@ def detect(img1, img2):
     img1_gray = cv2.cvtColor(blur1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(blur2, cv2.COLOR_BGR2GRAY)
     diff = cv2.absdiff(blur1, blur2)
+    # mask = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
 
     th = 40
     imask =  diff>th
@@ -25,9 +27,11 @@ def detect(img1, img2):
     a = np.asarray(result)
     ans=0
     for i in np.nditer(a):
+        # print(i)
         if i>100:
             ans+=1
     print(ans)
+    # time.sleep(1)
     if ans>1000:
         return True
     else:
@@ -38,9 +42,7 @@ def grab(n):
         cv2.imshow("capture",img)
         cv2.imwrite("img_"+str(i)+".jpg", img)
         cv2.waitKey(1)
-
-
-
+# detect(img1, img2)
 i=0
 grab(i)
 i+=1
