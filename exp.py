@@ -34,16 +34,25 @@ def detect(img1, img2):
     ans=0
     # a.sort()
     # print(a)
-    # ls=list()
+    ls=list()
     for i in a:
         for j in i:
             for k in j:
-                # ls.append(k)
-                if k>100:
-                    ans+=1
+                ls.append(k)
+    ls.sort(reverse=True)
+    for i in ls:
+        if i == 0:
+            break
+        if i>100:
+            ans+=1
+    # print(ls)
 
     print(ans)
 
+        # if a[i]<100:
+            # print(len(a) - i)
+            # break
+        # print(a[i], "\n")
     if ans>100:
         return True
     else:
@@ -63,6 +72,7 @@ i+=1
 while True:
     grab(i)
     nowTime = time.time()
+    # grab(i+1)
     if (nowTime - startTime) > fpsLimit:
         img1 = cv2.imread("img_"+str(i)+".jpg")
         img2 = cv2.imread("img_"+str(i-1)+".jpg")
@@ -71,14 +81,14 @@ while True:
             reference=i-1
             imgr = cv2.imread("img_"+str(reference)+".jpg")
             i+=1
-            for j in range(7):
+            for j in range(3):
                 grab(i)
                 img2 = cv2.imread("img_"+str(i)+".jpg")
                 if detect(imgr, img2)==False:
                     print("Not detected")
                     break
                 i+=1
-            if j==6:
+            if j==2:
                 print("confirmed")
                 playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
                 break
