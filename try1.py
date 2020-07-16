@@ -83,4 +83,4 @@ while True:
                 playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
                 break
         i+=1
-        startTime = time.time() # reset time
+        startTime = time.time()
