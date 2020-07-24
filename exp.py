@@ -13,6 +13,7 @@ fpsLimit = 0.5 # throttle limit
 
 
 def detect(img1, img2):
+
     blur1 = cv2.medianBlur(img1,15)
     blur2 = cv2.medianBlur(img2,15)
     img1_gray = cv2.cvtColor(blur1, cv2.COLOR_BGR2GRAY)
@@ -20,8 +21,9 @@ def detect(img1, img2):
     diff = cv2.absdiff(img1_gray, img2_gray)
     imask =  diff>100
     print(np.sum(np.reshape(imask,(-1))))
-
-    return np.sum(np.reshape(imask,(-1)))>1000
+    condition=np.sum(np.reshape(imask,(-1)))>1000
+    
+    return condition
 
 def grab(n):
         ret, img = webcam.read()
