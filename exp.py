@@ -13,14 +13,11 @@ fpsLimit = 0.5 # throttle limit
 
 
 def detect(img1, img2):
-    # blur1 = cv2.GaussianBlur(img1 ,(7,7),cv2.BORDER_DEFAULT)
-    # blur2 = cv2.GaussianBlur(img2 ,(7,7),cv2.BORDER_DEFAULT)
     blur1 = cv2.medianBlur(img1,15)
     blur2 = cv2.medianBlur(img2,15)
     img1_gray = cv2.cvtColor(blur1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(blur2, cv2.COLOR_BGR2GRAY)
     diff = cv2.absdiff(img1_gray, img2_gray)
-    # mask = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     imask =  diff>100
     print(np.sum(np.reshape(imask,(-1))))
 
@@ -48,7 +45,7 @@ while True:
         img1 = cv2.imread("img_"+str(i)+".jpg")
         img2 = cv2.imread("img_"+str(i-1)+".jpg")
         if detect(img1, img2)==True:
-            #print("Suspicious")
+            print("Suspicious")
             reference=i-1
             imgr = cv2.imread("img_"+str(reference)+".jpg")
             i+=1
@@ -56,13 +53,13 @@ while True:
                 grab(i)
                 img2 = cv2.imread("img_"+str(i)+".jpg")
                 if detect(imgr, img2)==False:
-                    #print("Not detected")
+                    print("Not detected")
                     break
                 i+=1
             if j==6:
-                #print("confirmed")
+                print("confirmed")
                 playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
                 break
         i+=1
         startTime = time.time()
-        #print(time.time()-iterStart)
+        print(time.time()-iterStart)
