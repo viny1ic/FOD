@@ -21,7 +21,7 @@ def detect(img1, img2):
     diff = cv2.absdiff(blur1, blur2)
     # mask = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
 
-    th = 40
+    th = 20
     imask =  diff>th
 
     canvas = np.zeros_like(img2, np.uint8)
@@ -39,7 +39,7 @@ def detect(img1, img2):
         for j in i:
             for k in j:
                 # ls.append(k)
-                if k>100:
+                if k>80:
                     ans+=1
 
     print(ans)
@@ -61,6 +61,7 @@ i=0
 grab(i)
 i+=1
 while True:
+    iterStart=time.time()
     grab(i)
     nowTime = time.time()
     if (nowTime - startTime) > fpsLimit:
@@ -84,3 +85,4 @@ while True:
                 break
         i+=1
         startTime = time.time()
+        print(time.time()-iterStart)

@@ -5,8 +5,8 @@ from playsound import playsound
 
 url = "http://192.168.2.2:8080" # Your url might be different, check the app
 key = cv2. waitKey(1)
-webcam = cv2.VideoCapture(url+"/video")
-# webcam = cv2.VideoCapture(0)
+# webcam = cv2.VideoCapture(url+"/video")
+webcam = cv2.VideoCapture(0)
 webcam.set(cv2.CAP_PROP_BUFFERSIZE,1)
 
 fpsLimit = 0.5 # throttle limit
@@ -34,6 +34,7 @@ def detect(img1, img2):
 
     ans2 = np.where(a>100)
     print(len(a[ans2]))
+    print(imask)
 
     if len(a[ans2])>1000:
         return True
