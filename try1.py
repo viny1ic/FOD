@@ -1,88 +1,62 @@
 import cv2
 import numpy as np
 import time
+import serial
 from playsound import playsound
 
-url = "http://192.168.2.2:8080" # Your url might be different, check the app
-key = cv2. waitKey(1)
-webcam = cv2.VideoCapture(url+"/video")
+url = "http://192.168.2.3:8080" + "/video" # Your url might be different, check the app
+webcam = cv2.VideoCapture(url)
 # webcam = cv2.VideoCapture(0)
+# webcam.set(cv2.CAP_PROP_BUFFERSIZE,1)
 
-fpsLimit = 7 # throttle limit
+# fpsLimit = 0.5 # throttle limit
+
+port = '/dev/ttyACM0'
+arduino = serial.Serial(port, 9600)
 
 
 def detect(img1, img2):
-    # blur1 = cv2.GaussianBlur(img1 ,(7,7),cv2.BORDER_DEFAULT)
-    # blur2 = cv2.GaussianBlur(img2 ,(7,7),cv2.BORDER_DEFAULT)
-    blur1 = cv2.medianBlur(img1,15)
-    blur2 = cv2.medianBlur(img2,15)
+    blur1 = cv2.blur(img1,(10,10))
+    blur2 = cv2.blur(img2,(10,10))
     img1_gray = cv2.cvtColor(blur1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(blur2, cv2.COLOR_BGR2GRAY)
-    diff = cv2.absdiff(blur1, blur2)
-    # mask = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    diff = cv2.absdiff(img1_gray, img2_gray)
+    # _=diff[diff[:,:]>20].shape[0]
 
-    th = 20
-    imask =  diff>th
+    # print("diff = ", diff[diff[:,:]>20].shape[0])
 
-    canvas = np.zeros_like(img2, np.uint8)
-    canvas[imask] = img2[imask]
-
-    cv2.imwrite("result.jpeg", canvas)
-    result = cv2.imread("result.jpeg")
-    a = np.asarray(result)
-    a = a.tolist()
-    ans=0
-    # a.sort()
-    # print(a)
-    # ls=list()
-    for i in a:
-        for j in i:
-            for k in j:
-                # ls.append(k)
-                if k>80:
-                    ans+=1
-
-    print(ans)
-
-    if ans>100:
-        return True
-    else:
-        return False
-
-def grab(n):
-        ret, img = webcam.read()
-        cv2.imshow("capture",img)
-        cv2.imwrite("img_"+str(n)+".jpg", img)
-        cv2.waitKey(1)
+    # cv2.imshow("diff",diff)
+    
+    return diff[diff[:,:]>20].shape[0] >100
 
 
-startTime = time.time()
-i=0
-grab(i)
-i+=1
-while True:
-    iterStart=time.time()
-    grab(i)
-    nowTime = time.time()
-    if (nowTime - startTime) > fpsLimit:
-        img1 = cv2.imread("img_"+str(i)+".jpg")
-        img2 = cv2.imread("img_"+str(i-1)+".jpg")
-        if detect(img1, img2)==True:
-            print("Suspicious")
-            reference=i-1
-            imgr = cv2.imread("img_"+str(reference)+".jpg")
-            i+=1
-            for j in range(7):
-                grab(i)
-                img2 = cv2.imread("img_"+str(i)+".jpg")
-                if detect(imgr, img2)==False:
-                    print("Not detected")
+
+
+def main(): 
+    _,img2 = webcam.read()
+
+    while True:     
+        while(arduino.in_waiting==0):
+            img1=img2
+            _,img2 = webcam.read()
+            print("drain", end ='')
+        if arduino.in_waiting>0:
+            
+            img1=img2
+            _,img2 = webcam.read()
+            if detect(img1, img2): #figure out a way to stop the arduino at this position
+                print("Suspicious")
+                for j in range(200):
+                    _,img2 = webcam.read()
+                    if not detect(img1, img2):
+                        print("Not detected")
+                        # arduino.write(1)
+                        break
+                if j==199:
+                    print("confirmed")
+                    playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
                     break
-                i+=1
-            if j==6:
-                print("confirmed")
-                playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
-                break
-        i+=1
-        startTime = time.time()
-        print(time.time()-iterStart)
+            arduino.reset_input_buffer()
+
+if __name__=="__main__":
+    main()
