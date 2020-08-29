@@ -20,10 +20,6 @@ def detect(img1, img2):
     img1_gray = cv2.cvtColor(blur1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(blur2, cv2.COLOR_BGR2GRAY)
     diff = cv2.absdiff(img1_gray, img2_gray)
-    
-    # _=diff[diff[:,:]>20].shape[0]
-
-    print("diff = ", diff[diff[:,:]>20].shape[0])
 
     cv2.imshow("diff",diff)
     cv2.waitKey(2)
@@ -38,32 +34,33 @@ def main():
     _,img2 = webcam.read()
     arduino.write('1'.encode())
     while True:     
-        # while(arduino.in_waiting==0):
-        #     img1=img2
-        #     _,img2 = webcam.read()
-        #     print("drain", end ='')
-        print(arduino.readline().decode()[:-1])
-
-        if True:
-            img1=img2
-            _,img2 = webcam.read()
-            # _ = arduino.readline()
-            if detect(img1, img2): #figure out a way to stop the arduino at this position
-                print("Suspicious")
-                for j in range(600):
-                    _,img2 = webcam.read()
-                    if not detect(img1, img2):
-                        print("Not detected")
-                        break
-                if j==599:
-                    print("confirmed")
-                    while cv2.waitKey(1) & 0xff != ord('q'):
-                        playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
-                    break
+        if(arduino.in_waiting==0):
+            _,_ = webcam.read()
+        else:
             
-            arduino.write('1'.encode())
-            # arduino.reset_input_buffer()
-            print("detecting")
+            # print(arduino.readline().decode()[:-1])
+            pos = int(arduino.readline().decode()[:-1])
+            
+            if True:
+                t1 = time.time()
+                img1=img2
+                _,img2 = webcam.read()
+                if detect(img1, img2):
+                    print("Suspicious")
+                    for j in range(600):
+                        _,img2 = webcam.read()
+                        if not detect(img1, img2):
+                            print("Not detected")
+                            break
+                    if j==599:
+                        print("confirmed")
+                        while cv2.waitKey(1) & 0xff != ord('q'):
+                            playsound("salamisound-4208277-smoke-detector-3-x-beeps.mp3")
+                        break
+                
+                arduino.write('1'.encode())
+                print("detecting")
+                print(time.time()-t1)
 
 if __name__=="__main__":
     main()
