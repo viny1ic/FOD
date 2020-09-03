@@ -34,7 +34,7 @@ void setup() {
 void loop() {
   int inc = 30;
   while(true){
-    if(pos_x>=180){
+    if(pos_x>=90){
       for (pos_x; pos_x > 0; pos_x -= 1) { 
         servo_x.write(pos_x);
         delay(15);
