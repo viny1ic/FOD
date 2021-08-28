@@ -17,8 +17,8 @@ pip install opencv-python numpy pyserial playsound
 3.1 set the IP and port of camera feed into try1.py (if we are using an IP camera)
 3.2 set the corresponding camera input if using wired USB camera
 4. make sure the camera is set on a stable, non vibrational surface and is free from disturbances.
-5. run the program
+## run the program
 ```
 python try1.py
 ```
-6. throw a small FOD in the camera's field of vision
+ then throw a small FOD in the camera's field of vision
